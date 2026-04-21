@@ -19,6 +19,7 @@ public class RequestRepositoryImpl implements RequestRepository {
 
         itemRequest.setId(generateNewId());
         itemRequest.setCreated(LocalDate.now());
+        itemRequests.put(itemRequest.getId(), itemRequest);
 
         return itemRequest;
     }

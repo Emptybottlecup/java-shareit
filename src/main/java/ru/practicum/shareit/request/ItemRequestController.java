@@ -24,7 +24,7 @@ public class ItemRequestController {
         return itemRequestService.getAllItemRequests();
     }
 
-    @GetMapping("/userId")
+    @GetMapping("/{userId}")
     public List<ItemRequestDto> getItemRequests(@PathVariable Long userId) {
         return itemRequestService.getItemRequestsByUserId(userId);
     }
