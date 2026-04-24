@@ -15,4 +15,6 @@ public interface ItemRepository {
 
     List<Item> searchItem(String searchText);
 
+    void deleteAll();
+
 }

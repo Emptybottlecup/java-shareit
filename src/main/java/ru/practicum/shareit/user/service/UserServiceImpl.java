@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ExistedEmail;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRep;
@@ -59,6 +61,10 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundUserException(String.format("User with id = %d not found", userId));
         }
         userRep.deleteUser(userId);
+    }
+
+    public void deleteAll() {
+        userRep.deleteAll();
     }
 
 }

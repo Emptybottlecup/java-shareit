@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
@@ -8,6 +9,7 @@ import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 class ItemRepositoryImpl implements ItemRepository {
 
     private final Map<Long, Item> items;
@@ -16,11 +18,13 @@ class ItemRepositoryImpl implements ItemRepository {
     public Item addNewItem(Item item) {
         item.setId(generateNewId());
         items.put(item.getId(), item);
+        log.info("Добавлен новый item с именем = {}", item.getName());
         return item;
     }
 
     public Optional<Item> getItem(Long itemId) {
         if (!items.containsKey(itemId)) {
+            log.info("Предмет с id = {} не найден", itemId);
             return Optional.empty();
         }
         return Optional.of(items.get(itemId));
@@ -34,6 +38,7 @@ class ItemRepositoryImpl implements ItemRepository {
 
     public List<Item> searchItem(String searchText) {
         if (searchText == null || searchText.isBlank()) {
+            log.info("Предмет с описанием = {} не найден", searchText);
             return new ArrayList<>();
         }
 
@@ -47,6 +52,11 @@ class ItemRepositoryImpl implements ItemRepository {
 
     private Long generateNewId() {
         return ++currentId;
+    }
+
+    public void deleteAll() {
+        currentId = 0L;
+        items.clear();
     }
 
 }

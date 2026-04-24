@@ -18,4 +18,6 @@ public interface ItemService {
 
     List<ItemDto> searchItem(String searchText);
 
+    void deleteAll();
+
 }

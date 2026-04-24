@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.dto.mapper.BookingMapper;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class BookingRepositoryImpl implements BookingRepository {
 
     private final Map<Long, Booking> bookings;
@@ -20,6 +22,7 @@ public class BookingRepositoryImpl implements BookingRepository {
         Booking booking = BookingMapper.mapNewBookingRequestToBooking(newBookingRequest, userId, itemId);
         booking.setId(generateNewId());
         bookings.put(booking.getId(), booking);
+        log.info("Бронь для предмета с id = {} добавлена", booking.getId());
         return booking;
     }
 
@@ -33,7 +36,7 @@ public class BookingRepositoryImpl implements BookingRepository {
     public List<Booking> getBookingsByUserId(Long userId) {
         return bookings.values()
                 .stream()
-                .filter(booking -> booking.getItemId().equals(userId))
+                .filter(booking -> booking.getBookerId().equals(userId))
                 .toList();
     }
 

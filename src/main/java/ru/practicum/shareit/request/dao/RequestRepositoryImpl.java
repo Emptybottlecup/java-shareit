@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.dao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.request.model.ItemRequest;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class RequestRepositoryImpl implements RequestRepository {
 
     private final Map<Long, ItemRequest> itemRequests;
@@ -20,7 +22,7 @@ public class RequestRepositoryImpl implements RequestRepository {
         itemRequest.setId(generateNewId());
         itemRequest.setCreated(LocalDate.now());
         itemRequests.put(itemRequest.getId(), itemRequest);
-
+        log.info("Новый запрос на вещь с описанием = {} добавлен", itemRequest.getDescription());
         return itemRequest;
     }
 

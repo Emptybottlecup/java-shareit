@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRep;
@@ -27,13 +29,13 @@ public class BookingServiceImpl implements BookingService {
         ItemDto itemDto = itemService.getItem(itemId);
 
         if (!itemDto.getAvailable() && !checkFreePeriod(newBookingRequest, itemId)) {
+            log.info("Предмет с id = {} не доступен для бронирования", itemId);
             throw new ItemIsNotAvailable(String.format("Item with id = %d is not available for booking", itemId));
         }
 
         UpdateItemInformation updateItemInformation = new UpdateItemInformation();
         updateItemInformation.setAvailable(false);
         itemService.updateItemInformation(updateItemInformation, itemDto.getOwner(), itemId);
-
         return BookingMapper.mapBookingToBookingDto(bookingRep.addNewBooking(newBookingRequest, userId, itemId));
     }
 

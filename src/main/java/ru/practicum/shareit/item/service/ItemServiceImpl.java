@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.NotFoundItemException;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRep;
@@ -52,6 +54,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundItemException(String.format("Item with id = %d not found", itemId));
         }
         if (!item.get().getOwner().equals(userId)) {
+            log.info("Пользователь с id = {} не является владельцем item с id = {}", userId, itemId);
             throw new AccessException(String.format("This user id = %d dont have item id = %d", userId, itemId));
         }
 
@@ -65,6 +68,10 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(ItemMapper::mapItemToItemDto)
                 .toList();
+    }
+
+    public void deleteAll() {
+        itemRep.deleteAll();
     }
 
 }
