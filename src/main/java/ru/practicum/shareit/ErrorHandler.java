@@ -45,4 +45,10 @@ public class ErrorHandler {
         return new ErrorResponse("Item is not available", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleThrowable(final Throwable throwable) {
+        return new ErrorResponse("Internal server error", throwable.getMessage());
+    }
+
 }

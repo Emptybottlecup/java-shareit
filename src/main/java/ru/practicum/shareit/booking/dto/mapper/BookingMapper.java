@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking.dto.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.model.Booking;
 
+@UtilityClass
 public class BookingMapper {
 
     public static Booking mapNewBookingRequestToBooking(NewBookingRequest newBookingRequest, Long bookerId,

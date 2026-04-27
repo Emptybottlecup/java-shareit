@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemRequestController {
 
+    private final static String HEADER_USER_ID = "X-Sharer-User-Id";
     private final ItemRequestService itemRequestService;
 
     @GetMapping
@@ -31,7 +32,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto addNewItemRequest(@RequestBody @Valid NewItemRequestRequest newItemRequestRequest,
-                                            @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                            @RequestHeader(HEADER_USER_ID) Long userId) {
         return itemRequestService.addNewItemRequest(newItemRequestRequest, userId);
     }
 

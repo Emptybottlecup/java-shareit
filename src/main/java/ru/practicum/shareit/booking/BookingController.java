@@ -17,10 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
 
+    private final static String HEADER_USER_ID = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
     @GetMapping
-    public List<BookingDto> getBookingsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<BookingDto> getBookingsByUserId(@RequestHeader(HEADER_USER_ID) Long userId) {
         return bookingService.getBookingsByUserId(userId);
     }
 
@@ -31,7 +32,7 @@ public class BookingController {
 
     @PostMapping("/{itemId}")
     public BookingDto addNewBooking(@RequestBody @Valid NewBookingRequest newBookingRequest,
-                                    @RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
+                                    @RequestHeader(HEADER_USER_ID) Long userId, @PathVariable Long itemId) {
         return bookingService.addNewBooking(newBookingRequest, userId, itemId);
     }
 
