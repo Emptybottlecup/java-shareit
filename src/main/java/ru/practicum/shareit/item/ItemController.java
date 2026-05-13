@@ -1,12 +1,52 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.NewItemRequest;
+import ru.practicum.shareit.item.dto.UpdateItemInformation;
+import ru.practicum.shareit.item.service.ItemService;
+
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 @RestController
 @RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
+
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
+    private final ItemService itemService;
+
+    @GetMapping
+    public List<ItemDto> getUserItems(@RequestHeader(HEADER_USER_ID) Long userId) {
+        return itemService.getUserItems(userId);
+    }
+
+    @PostMapping
+    public ItemDto addNewItem(@RequestBody @Valid NewItemRequest newItemRequest,
+                              @RequestHeader(HEADER_USER_ID) Long userId) {
+        return itemService.addNewItem(newItemRequest, userId);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto getItem(@PathVariable Long itemId) {
+        return itemService.getItem(itemId);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto updateItemInformation(@RequestBody @Valid UpdateItemInformation updateItemInformation,
+                                         @RequestHeader(HEADER_USER_ID) Long userId,
+                                         @PathVariable Long itemId) {
+        return itemService.updateItemInformation(updateItemInformation, userId, itemId);
+    }
+
+    @GetMapping("/search")
+    public List<ItemDto> searchItem(@RequestParam("text") String searchText) {
+        return itemService.searchItem(searchText);
+    }
+
 }
