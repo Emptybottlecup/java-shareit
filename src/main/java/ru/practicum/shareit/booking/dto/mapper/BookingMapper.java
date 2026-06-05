@@ -3,31 +3,38 @@ package ru.practicum.shareit.booking.dto.mapper;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.dto.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 @UtilityClass
 public class BookingMapper {
 
-    public static Booking mapNewBookingRequestToBooking(NewBookingRequest newBookingRequest, Long bookerId,
-                                                        Long itemId) {
-        Booking bookingDto = new Booking();
+    public static Booking mapNewBookingRequestToBooking(NewBookingRequest newBookingRequest, User booker,
+                                                        Item item) {
+        Booking booking = new Booking();
 
-        bookingDto.setItemId(itemId);
-        bookingDto.setBookerId(bookerId);
-        bookingDto.setStartBooking(newBookingRequest.getStartBooking());
-        bookingDto.setEndBooking(newBookingRequest.getEndBooking());
+        booking.setBooker(booker);
+        booking.setItem(item);
+        booking.setStart(newBookingRequest.getStart());
+        booking.setEnd(newBookingRequest.getEnd());
+        booking.setStatus(BookingStatus.WAITING);
 
-        return bookingDto;
+        return booking;
     }
 
     public static BookingDto mapBookingToBookingDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
 
         bookingDto.setId(booking.getId());
-        bookingDto.setItemId(booking.getItemId());
-        bookingDto.setBookerId(booking.getBookerId());
-        bookingDto.setStartBooking(booking.getStartBooking());
-        bookingDto.setEndBooking(booking.getEndBooking());
+        bookingDto.setStatus(booking.getStatus());
+        bookingDto.setItem(ItemMapper.mapItemToItemDtoWithoutComments(booking.getItem()));
+        bookingDto.setBooker(UserMapper.mapUserToUserDto(booking.getBooker()));
+        bookingDto.setStart(booking.getStart());
+        bookingDto.setEnd(booking.getEnd());
 
         return bookingDto;
     }

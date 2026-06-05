@@ -21,19 +21,32 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public List<BookingDto> getBookingsByUserId(@RequestHeader(HEADER_USER_ID) Long userId) {
-        return bookingService.getBookingsByUserId(userId);
+    public List<BookingDto> getBookingsByUserId(@RequestHeader(HEADER_USER_ID) Long userId,
+                                                @RequestParam(name = "state", defaultValue = "ALL") String state) {
+        return bookingService.getBookingsByUserId(userId, state);
     }
 
-    @GetMapping("/{itemId}")
-    public List<BookingDto> getBookingsByItemId(@PathVariable Long itemId) {
-        return bookingService.getBookingsByItemId(itemId);
+    @GetMapping("/owner")
+    public List<BookingDto> getBookingsByOwnerId(@RequestHeader(HEADER_USER_ID) Long userId,
+                                                @RequestParam(name = "state", defaultValue = "ALL") String state) {
+        return bookingService.getBookingsByUserId(userId, state);
     }
 
-    @PostMapping("/{itemId}")
+    @GetMapping("/{bookingId}")
+    public BookingDto getBookingById(@RequestHeader(HEADER_USER_ID) Long userId, @PathVariable Long bookingId) {
+        return bookingService.getBookingById(bookingId, userId);
+    }
+
+    @PostMapping
     public BookingDto addNewBooking(@RequestBody @Valid NewBookingRequest newBookingRequest,
-                                    @RequestHeader(HEADER_USER_ID) Long userId, @PathVariable Long itemId) {
-        return bookingService.addNewBooking(newBookingRequest, userId, itemId);
+                                    @RequestHeader(HEADER_USER_ID) Long userId) {
+        return bookingService.addNewBooking(newBookingRequest, userId);
+    }
+
+    @PatchMapping("/{bookingId}")
+    public BookingDto changeBooingStatus(@RequestHeader(HEADER_USER_ID) Long userId, @PathVariable Long bookingId,
+                                   @RequestParam(name = "approved") boolean isApproved) {
+        return bookingService.changeBookingStatus(userId, bookingId, isApproved);
     }
 
 }

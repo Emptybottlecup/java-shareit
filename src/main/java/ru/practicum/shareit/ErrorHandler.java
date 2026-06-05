@@ -29,6 +29,12 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotFoundUserForBookingsException(final NotFoundUserForBookingsException e) {
+        return new ErrorResponse("Not found use for find bookings", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse("Validation problem", e.getMessage());
     }
@@ -49,6 +55,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable throwable) {
         return new ErrorResponse("Internal server error", throwable.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundBooking(final NotFoundBookingException e) {
+        return new ErrorResponse("Booking not found", e.getMessage());
     }
 
 }

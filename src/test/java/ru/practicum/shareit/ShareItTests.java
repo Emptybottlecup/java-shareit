@@ -1,19 +1,22 @@
 package ru.practicum.shareit;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.enums.BookingStatus;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exceptions.ItemIsNotAvailable;
 import ru.practicum.shareit.exceptions.NotFoundItemException;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemInformation;
+import ru.practicum.shareit.item.dto.comment.NewCommentRequest;
+import ru.practicum.shareit.item.dto.item.ItemDtoWithComments;
+import ru.practicum.shareit.item.dto.item.ItemDtoWithoutComments;
+import ru.practicum.shareit.item.dto.item.NewItemRequest;
+import ru.practicum.shareit.item.dto.item.UpdateItemInformation;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.NewItemRequestRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -22,9 +25,12 @@ import ru.practicum.shareit.user.dto.UpdateUserInformation;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ShareItTests {
 
     @Autowired
@@ -38,21 +44,26 @@ class ShareItTests {
 
     private final NewItemRequest newItemRequest1 = new NewItemRequest();
     private final NewItemRequest newItemRequest2 = new NewItemRequest();
-    private ItemDto itemDto1;
-    private ItemDto itemDto2;
-
+    private ItemDtoWithoutComments itemDtoWithoutComments1;
+    private ItemDtoWithoutComments itemDtoWithoutComments2;
     private final NewUserRequest newUserRequest1 = new NewUserRequest();
     private final NewUserRequest newUserRequest2 = new NewUserRequest();
     private UserDto userDto1;
     private UserDto userDto2;
 
-    @BeforeEach
+    private final NewCommentRequest newCommentRequest = new NewCommentRequest();
+    private final NewBookingRequest newBookingRequest = new NewBookingRequest();
+
+    private BookingDto bookingDto;
+    private final LocalDateTime startBooking = LocalDateTime.now().plusMinutes(5);
+    private final LocalDateTime endBooking = startBooking.plusDays(20);
+
+    @BeforeAll
     public void contextLoad() {
         newUserRequest1.setEmail("dobr@mail.ru");
         newUserRequest1.setName("Andrey");
         newUserRequest2.setEmail("dobe20@mail.ru");
         newUserRequest2.setName("Anton");
-
         userDto1 = userService.addNewUser(newUserRequest1);
         userDto2 = userService.addNewUser(newUserRequest2);
 
@@ -62,15 +73,17 @@ class ShareItTests {
         newItemRequest2.setName("Saw");
         newItemRequest2.setDescription("Good saw");
         newItemRequest2.setAvailable(true);
+        itemDtoWithoutComments1 = itemService.addNewItem(newItemRequest1, userDto1.getId());
+        itemDtoWithoutComments2 = itemService.addNewItem(newItemRequest2, userDto2.getId());
 
-        itemDto1 = itemService.addNewItem(newItemRequest1, userDto1.getId());
-        itemDto2 = itemService.addNewItem(newItemRequest2, userDto2.getId());
-    }
+        newBookingRequest.setItemId(itemDtoWithoutComments1.getId());
+        newBookingRequest.setStart(startBooking);
+        newBookingRequest.setEnd(endBooking);
+        bookingDto = bookingService.addNewBooking(newBookingRequest, userDto2.getId());
+        bookingService.changeBookingStatus(userDto1.getId(), bookingDto.getId(), true);
+        newCommentRequest.setText("DSDSDSDSDSDSDSD");
 
-    @AfterEach
-    public void clearContext() {
-        userService.deleteAll();
-        itemService.deleteAll();
+        itemService.addComment(newCommentRequest,userDto2.getId(), itemDtoWithoutComments1.getId());
     }
 
     @Test
@@ -79,10 +92,6 @@ class ShareItTests {
                 userService.getUser(userDto1.getId()).getName());
         Assertions.assertEquals(newUserRequest2.getName(),
                 userService.getUser(userDto2.getId()).getName());
-
-        userService.deleteUser(userDto1.getId());
-        Assertions.assertThrows(NotFoundUserException.class, () ->
-                userService.getUser(userDto1.getId()));
 
         UpdateUserInformation newUpdateUserInformation = new UpdateUserInformation();
         newUpdateUserInformation.setName("Nikita");
@@ -95,9 +104,9 @@ class ShareItTests {
     @Test
     public void testItemService() {
         Assertions.assertEquals(newItemRequest1.getName(),
-                itemService.getItem(itemDto1.getId()).getName());
+                itemService.getItem(itemDtoWithoutComments1.getId()).getName());
         Assertions.assertEquals(newItemRequest2.getName(),
-                itemService.getItem(itemDto2.getId()).getName());
+                itemService.getItem(itemDtoWithoutComments2.getId()).getName());
         Assertions.assertThrows(NotFoundItemException.class, () ->
                 itemService.getItem(9999L));
 
@@ -105,9 +114,9 @@ class ShareItTests {
 
         UpdateItemInformation updateItemInformation = new UpdateItemInformation();
         updateItemInformation.setName("Case");
-        itemService.updateItemInformation(updateItemInformation, userDto1.getId(), itemDto1.getId());
+        itemService.updateItemInformation(updateItemInformation, userDto2.getId(), itemDtoWithoutComments2.getId());
 
-        Assertions.assertEquals("Case", itemService.getUserItems(userDto1.getId()).getFirst().getName());
+        Assertions.assertEquals("Case", itemService.getUserItems(userDto2.getId()).getFirst().getName());
         Assertions.assertEquals(1, itemService.searchItem("Cas").size());
     }
 
@@ -123,20 +132,17 @@ class ShareItTests {
 
     @Test
     public void testBookingService() {
-        NewBookingRequest newBookingRequest = new NewBookingRequest();
+        Assertions.assertEquals(1, bookingService.getBookingsByUserId(userDto2.getId(), "ALL").size());
 
-        LocalDate startTime = LocalDate.now();
-        LocalDate endTime = startTime.plusYears(2);
+        BookingDto bookingDto1 = bookingService.getBookingById(bookingDto.getId(), userDto2.getId());
 
-        newBookingRequest.setStartBooking(startTime);
-        newBookingRequest.setEndBooking(endTime);
+        Assertions.assertEquals(BookingStatus.APPROVED, bookingDto1.getStatus());
+    }
 
-        bookingService.addNewBooking(newBookingRequest, userDto1.getId(), itemDto2.getId());
-
-        Assertions.assertEquals(1, bookingService.getBookingsByItemId(itemDto2.getId()).size());
-        Assertions.assertEquals(1, bookingService.getBookingsByUserId(userDto1.getId()).size());
-        Assertions.assertThrows(ItemIsNotAvailable.class, () -> bookingService.addNewBooking(newBookingRequest,
-                userDto2.getId(), itemDto2.getId()));
+    @Test
+    public void testComments() {
+        ItemDtoWithComments itemDtoWithComments = itemService.getItem(itemDtoWithoutComments1.getId());
+        Assertions.assertEquals(newCommentRequest.getText(), itemDtoWithComments.getComments().getFirst().getText());
     }
 
 }

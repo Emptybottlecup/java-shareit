@@ -3,9 +3,12 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemInformation;
+import ru.practicum.shareit.item.dto.comment.CommentDto;
+import ru.practicum.shareit.item.dto.comment.NewCommentRequest;
+import ru.practicum.shareit.item.dto.item.ItemDtoWithComments;
+import ru.practicum.shareit.item.dto.item.ItemDtoWithoutComments;
+import ru.practicum.shareit.item.dto.item.NewItemRequest;
+import ru.practicum.shareit.item.dto.item.UpdateItemInformation;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -22,31 +25,38 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getUserItems(@RequestHeader(HEADER_USER_ID) Long userId) {
+    public List<ItemDtoWithComments> getUserItems(@RequestHeader(HEADER_USER_ID) Long userId) {
         return itemService.getUserItems(userId);
     }
 
     @PostMapping
-    public ItemDto addNewItem(@RequestBody @Valid NewItemRequest newItemRequest,
-                              @RequestHeader(HEADER_USER_ID) Long userId) {
+    public ItemDtoWithoutComments addNewItem(@RequestBody @Valid NewItemRequest newItemRequest,
+                                             @RequestHeader(HEADER_USER_ID) Long userId) {
         return itemService.addNewItem(newItemRequest, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable Long itemId) {
+    public ItemDtoWithComments getItem(@PathVariable Long itemId) {
         return itemService.getItem(itemId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItemInformation(@RequestBody @Valid UpdateItemInformation updateItemInformation,
-                                         @RequestHeader(HEADER_USER_ID) Long userId,
-                                         @PathVariable Long itemId) {
+    public ItemDtoWithoutComments updateItemInformation(@RequestBody @Valid UpdateItemInformation updateItemInformation,
+                                                        @RequestHeader(HEADER_USER_ID) Long userId,
+                                                        @PathVariable Long itemId) {
         return itemService.updateItemInformation(updateItemInformation, userId, itemId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam("text") String searchText) {
+    public List<ItemDtoWithoutComments> searchItem(@RequestParam("text") String searchText) {
         return itemService.searchItem(searchText);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestBody NewCommentRequest newCommentRequest,
+                                 @RequestHeader(HEADER_USER_ID) Long userId,
+                                 @PathVariable Long itemId) {
+        return itemService.addComment(newCommentRequest, userId, itemId);
     }
 
 }
