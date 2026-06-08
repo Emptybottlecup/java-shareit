@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.exceptions.AccessException;
+import ru.practicum.shareit.exceptions.CommentAddException;
 import ru.practicum.shareit.exceptions.NotFoundItemException;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
 import ru.practicum.shareit.item.dao.CommentRepository;
@@ -140,14 +141,15 @@ public class ItemServiceImpl implements ItemService {
         boolean isHasBeenApproved = false;
 
         for (var book : bookings) {
-            if (book.getStatus().equals(BookingStatus.APPROVED)) {
+            if (book.getStatus().equals(BookingStatus.APPROVED) && book.getEnd().isBefore(LocalDateTime.now())) {
                 isHasBeenApproved = true;
                 break;
             }
         }
 
         if (!isHasBeenApproved) {
-            throw new AccessException(String.format("User with id = %d didnt book item with id = %d", userId, itemId));
+            throw new CommentAddException(String.format("User with id = %d didnt book item with id = %d", userId,
+                    itemId));
         }
 
         return CommentMapper.mapCommentToCommentDto(commentRepository.save(CommentMapper

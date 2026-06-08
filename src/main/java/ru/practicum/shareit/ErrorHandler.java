@@ -29,6 +29,12 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCommentAddExceptionException(final CommentAddException e) {
+        return new ErrorResponse("Comment adding exception", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotFoundUserForBookingsException(final NotFoundUserForBookingsException e) {
         return new ErrorResponse("Not found use for find bookings", e.getMessage());
     }

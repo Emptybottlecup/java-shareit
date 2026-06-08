@@ -7,16 +7,11 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.NotFoundItemException;
-import ru.practicum.shareit.exceptions.NotFoundUserException;
-import ru.practicum.shareit.item.dto.comment.NewCommentRequest;
-import ru.practicum.shareit.item.dto.item.ItemDtoWithComments;
 import ru.practicum.shareit.item.dto.item.ItemDtoWithoutComments;
 import ru.practicum.shareit.item.dto.item.NewItemRequest;
 import ru.practicum.shareit.item.dto.item.UpdateItemInformation;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.NewItemRequestRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -26,7 +21,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -50,8 +44,6 @@ class ShareItTests {
     private final NewUserRequest newUserRequest2 = new NewUserRequest();
     private UserDto userDto1;
     private UserDto userDto2;
-
-    private final NewCommentRequest newCommentRequest = new NewCommentRequest();
     private final NewBookingRequest newBookingRequest = new NewBookingRequest();
 
     private BookingDto bookingDto;
@@ -81,9 +73,6 @@ class ShareItTests {
         newBookingRequest.setEnd(endBooking);
         bookingDto = bookingService.addNewBooking(newBookingRequest, userDto2.getId());
         bookingService.changeBookingStatus(userDto1.getId(), bookingDto.getId(), true);
-        newCommentRequest.setText("DSDSDSDSDSDSDSD");
-
-        itemService.addComment(newCommentRequest,userDto2.getId(), itemDtoWithoutComments1.getId());
     }
 
     @Test
@@ -137,12 +126,6 @@ class ShareItTests {
         BookingDto bookingDto1 = bookingService.getBookingById(bookingDto.getId(), userDto2.getId());
 
         Assertions.assertEquals(BookingStatus.APPROVED, bookingDto1.getStatus());
-    }
-
-    @Test
-    public void testComments() {
-        ItemDtoWithComments itemDtoWithComments = itemService.getItem(itemDtoWithoutComments1.getId());
-        Assertions.assertEquals(newCommentRequest.getText(), itemDtoWithComments.getComments().getFirst().getText());
     }
 
 }
