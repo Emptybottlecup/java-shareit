@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ExistedEmail;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.NewUserRequest;
@@ -20,13 +19,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRep;
 
     public UserDto addNewUser(NewUserRequest newUserRequest) {
-        try {
             User newUser = userRep.save(UserMapper.mapNewUserRequestToUser(newUserRequest));
 
             return UserMapper.mapUserToUserDto(newUser);
-        } catch (Throwable th) {
-            throw new ExistedEmail(String.format("User with email = %s already exist", newUserRequest.getEmail()));
-        }
     }
 
     public UserDto getUser(Long userId) {
@@ -37,7 +32,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto updateUser(UpdateUserInformation updateUserInformation, Long userId) {
-        try {
             User user = userRep.findById(userId).orElseThrow(() ->
                     new NotFoundUserException(String.format("User with id = %d not found", userId)));
 
@@ -46,10 +40,6 @@ public class UserServiceImpl implements UserService {
             userRep.save(updatedUser);
 
             return UserMapper.mapUserToUserDto(updatedUser);
-        } catch (Throwable th) {
-            throw new ExistedEmail(String.format("User with email = %s already exist",
-                    updateUserInformation.getEmail()));
-        }
     }
 
     public void deleteUser(Long userId) {

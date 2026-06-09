@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(name = "text")
-    String text;
+    private String text;
     @Column(name = "author")
-    String author;
+    private String author;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
-    Item item;
+    private Item item;
     @Column(name = "created")
-    LocalDateTime created;
+    private LocalDateTime created;
 }

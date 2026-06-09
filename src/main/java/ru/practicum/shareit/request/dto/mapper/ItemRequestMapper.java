@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @UtilityClass
 public class ItemRequestMapper {
 
-    public static ItemRequest mapNewItemRequestRequestToItemRequest(NewItemRequestRequest newItemRequest, Long userId) {
+    public ItemRequest mapNewItemRequestRequestToItemRequest(NewItemRequestRequest newItemRequest, Long userId) {
         ItemRequest itemRequest = new ItemRequest();
 
         itemRequest.setCreated(LocalDate.now());
@@ -20,7 +20,7 @@ public class ItemRequestMapper {
         return itemRequest;
     }
 
-    public static ItemRequestDto mapItemRequestToItemRequestDto(ItemRequest itemRequest) {
+    public ItemRequestDto mapItemRequestToItemRequestDto(ItemRequest itemRequest) {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
 
         itemRequestDto.setId(itemRequest.getId());

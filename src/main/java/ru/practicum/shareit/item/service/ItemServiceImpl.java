@@ -22,7 +22,9 @@ import ru.practicum.shareit.item.dto.item.ItemDtoWithoutComments;
 import ru.practicum.shareit.item.dto.item.NewItemRequest;
 import ru.practicum.shareit.item.dto.item.UpdateItemInformation;
 import ru.practicum.shareit.item.dto.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.QComment;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -54,14 +56,20 @@ public class ItemServiceImpl implements ItemService {
         List<Item> userItems = itemRep.findByOwnerId(userId);
 
         List<Long> itemsId = userItems.stream().map(Item::getId).toList();
-        BooleanExpression expression = QBooking.booking.item.id.in(itemsId);
-        Map<Long, List<Booking>> bookingsByItemId = StreamSupport.stream(bookingRepository.findAll(expression)
+
+        BooleanExpression expressionBookings = QBooking.booking.item.id.in(itemsId);
+        Map<Long, List<Booking>> bookingsByItemId = StreamSupport.stream(bookingRepository.findAll(expressionBookings)
                 .spliterator(), false).collect(Collectors.groupingBy(booking -> booking
+                .getItem().getId()));
+
+        BooleanExpression expressionComments = QComment.comment.item.id.in(itemsId);
+        Map<Long, List<Comment>> commentsById = StreamSupport.stream(commentRepository.findAll(expressionComments)
+                .spliterator(), false).collect(Collectors.groupingBy(comment -> comment
                 .getItem().getId()));
 
         return userItems.stream()
                 .map(item -> {
-                    List<CommentDto> comments = commentRepository.findByItemId(item.getId()).stream()
+                    List<CommentDto> comments = commentsById.getOrDefault(item.getId(), new ArrayList<>()).stream()
                             .map(CommentMapper::mapCommentToCommentDto)
                             .toList();
 

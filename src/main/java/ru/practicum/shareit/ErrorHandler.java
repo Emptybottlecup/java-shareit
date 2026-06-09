@@ -1,5 +1,6 @@
 package ru.practicum.shareit;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -47,8 +48,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleExistedEmail(final ExistedEmail e) {
-        return new ErrorResponse("Existed email", e.getMessage());
+    public ErrorResponse handleExistedEmail(final DataIntegrityViolationException ex) {
+        return new ErrorResponse("Existed email", ex.getMessage());
     }
 
     @ExceptionHandler

@@ -14,7 +14,7 @@ import java.util.List;
 @UtilityClass
 public class ItemMapper {
 
-    public static ItemDtoWithoutComments mapItemToItemDtoWithoutComments(Item item) {
+    public ItemDtoWithoutComments mapItemToItemDtoWithoutComments(Item item) {
         ItemDtoWithoutComments itemDtoWithoutComments = new ItemDtoWithoutComments();
 
         itemDtoWithoutComments.setName(item.getName());
@@ -26,7 +26,7 @@ public class ItemMapper {
         return itemDtoWithoutComments;
     }
 
-    public static ItemDtoWithComments mapItemToItemDtoWithComments(Item item, List<CommentDto> commentsDto) {
+    public ItemDtoWithComments mapItemToItemDtoWithComments(Item item, List<CommentDto> commentsDto) {
         ItemDtoWithComments itemDtoWithComments = new ItemDtoWithComments();
 
         itemDtoWithComments.setName(item.getName());
@@ -39,7 +39,7 @@ public class ItemMapper {
         return itemDtoWithComments;
     }
 
-    public static Item mapNewItemRequestToItem(NewItemRequest newItemRequest, User owner) {
+    public Item mapNewItemRequestToItem(NewItemRequest newItemRequest, User owner) {
         Item item = new Item();
 
         item.setName(newItemRequest.getName());
@@ -50,7 +50,7 @@ public class ItemMapper {
         return item;
     }
 
-    public static Item mapUpdateItemInformationToItem(UpdateItemInformation updateItemInformation, Item item) {
+    public Item mapUpdateItemInformationToItem(UpdateItemInformation updateItemInformation, Item item) {
         if (updateItemInformation.hasName()) {
             item.setName(updateItemInformation.getName());
         }

@@ -121,7 +121,8 @@ class ShareItTests {
 
     @Test
     public void testBookingService() {
-        Assertions.assertEquals(1, bookingService.getBookingsByUserId(userDto2.getId(), "ALL").size());
+        Assertions.assertEquals(1, bookingService.getBookingsByUserId(userDto2.getId(),
+                BookingStatus.ALL).size());
 
         BookingDto bookingDto1 = bookingService.getBookingById(bookingDto.getId(), userDto2.getId());
 

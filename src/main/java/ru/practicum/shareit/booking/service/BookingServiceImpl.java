@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
     }
 
-    public List<BookingDto> getBookingsByUserId(Long userId, String state) {
+    public List<BookingDto> getBookingsByUserId(Long userId, BookingStatus state) {
         userRep.findById(userId).orElseThrow(() ->
                 new NotFoundUserException(String.format("User with id = %d not found", userId)));
 
@@ -79,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
     }
 
-    public List<BookingDto> getBookingsByOwnerId(Long userId, String state) {
+    public List<BookingDto> getBookingsByOwnerId(Long userId, BookingStatus state) {
         userRep.findById(userId).orElseThrow(() ->
                 new NotFoundUserException(String.format("User with id = %d not found", userId)));
 
@@ -143,35 +143,35 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private BooleanExpression chooseBooleanExpression(String state, BooleanExpression expression) {
+    private BooleanExpression chooseBooleanExpression(BookingStatus state, BooleanExpression expression) {
         LocalDateTime currentTime = LocalDateTime.now();
 
         switch (state) {
-            case "ALL": {
+            case BookingStatus.ALL: {
                 break;
             }
-            case "CURRENT": {
+            case BookingStatus.CURRENT: {
                 BooleanExpression startLessEqualNow = QBooking.booking.start.loe(currentTime);
                 BooleanExpression endGreaterNow = QBooking.booking.end.gt(currentTime);
                 expression = expression.and(startLessEqualNow).and(endGreaterNow);
                 break;
             }
-            case "PAST": {
+            case BookingStatus.PAST: {
                 BooleanExpression endLessNow = QBooking.booking.end.lt(currentTime);
                 expression = expression.and(endLessNow);
                 break;
             }
-            case "FUTURE": {
+            case BookingStatus.FUTURE: {
                 BooleanExpression startGreaterNow = QBooking.booking.start.gt(currentTime);
                 expression = expression.and(startGreaterNow);
                 break;
             }
-            case "WAITING": {
+            case BookingStatus.WAITING: {
                 BooleanExpression waitingStatus = QBooking.booking.status.eq(BookingStatus.WAITING);
                 expression = expression.and(waitingStatus);
                 break;
             }
-            case "REJECTED": {
+            case BookingStatus.REJECTED: {
                 BooleanExpression rejectedStatus = QBooking.booking.status.eq(BookingStatus.REJECTED);
                 expression = expression.and(rejectedStatus);
                 break;
