@@ -1,8 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.Data;
+import ru.practicum.shareit.booking.enums.BookingStatus;
+import ru.practicum.shareit.item.dto.item.ItemDtoWithoutComments;
+import ru.practicum.shareit.user.dto.UserDto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-bookings.
@@ -10,8 +13,9 @@ import java.time.LocalDate;
 @Data
 public class BookingDto {
     private Long id;
-    private Long bookerId;
-    private Long itemId;
-    private LocalDate startBooking;
-    private LocalDate endBooking;
+    private UserDto booker;
+    private ItemDtoWithoutComments item;
+    private BookingStatus status;
+    private LocalDateTime start;
+    private LocalDateTime end;
 }

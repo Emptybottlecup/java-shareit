@@ -1,5 +1,6 @@
 package ru.practicum.shareit;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,14 +30,26 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCommentAddExceptionException(final CommentAddException e) {
+        return new ErrorResponse("Comment adding exception", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotFoundUserForBookingsException(final NotFoundUserForBookingsException e) {
+        return new ErrorResponse("Not found use for find bookings", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse("Validation problem", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleExistedEmail(final ExistedEmail e) {
-        return new ErrorResponse("Existed email", e.getMessage());
+    public ErrorResponse handleExistedEmail(final DataIntegrityViolationException ex) {
+        return new ErrorResponse("Existed email", ex.getMessage());
     }
 
     @ExceptionHandler
@@ -49,6 +62,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable throwable) {
         return new ErrorResponse("Internal server error", throwable.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundBooking(final NotFoundBookingException e) {
+        return new ErrorResponse("Booking not found", e.getMessage());
     }
 
 }
